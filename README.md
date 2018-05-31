@@ -5,7 +5,7 @@
 
 # Implement Promises/A+ with es6
 
-用es6实现了一个promise，使用 Compliance Tests测试通过，转es5请运行脚本 npm run babel。（现在虽然已经实现了，但是代码比较乱，还要整理下）
+用es6实现了一个promise，使用 Compliance Tests测试通过，转es5请运行脚本 npm run babel。
 
 ## How To Test
 

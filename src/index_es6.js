@@ -1,4 +1,4 @@
-class Promise {
+export default class Promise {
   constructor (executor) {
     this.status = 'panding'
     this.value = undefined
@@ -15,19 +15,22 @@ class Promise {
   }
 
   then (onFulfilled, onRejected) {
+    const asyncCallback = (promise2, cb, data, resolve, reject, isFulfilled) => {
+      try {
+        if (typeof cb === 'function') {
+          const x = cb(data)
+          resolveExecutor(promise2, x, resolve, reject)
+        } else {
+          isFulfilled ? resolve(data) : reject(data)
+        }
+      } catch (err) {
+        reject(err)
+      }
+    }
     if (this.status === 'fulfilled') {
       const promise2 = new Promise((resolve, reject) => {
-        setTimeout(() => {
-          try {
-            if (typeof onFulfilled === 'function') {
-              const x = onFulfilled(this.value)
-              resolveExecutor(promise2, x, resolve, reject)
-            } else {
-              resolve(this.value)
-            }
-          } catch (err) {
-            reject(err)
-          }
+        setTimeout(() => { // 没有异步会导致promise2 === undefined
+          asyncCallback(promise2, onFulfilled, this.value, resolve, reject, true)
         })
       })
       return promise2
@@ -35,16 +38,7 @@ class Promise {
     if (this.status === 'rejected') {
       const promise2 = new Promise((resolve, reject) => {
         setTimeout(() => {
-          try {
-            if (typeof onRejected === 'function') {
-              const x = onRejected(this.reason)
-              resolveExecutor(promise2, x, resolve, reject)
-            } else {
-              reject(this.reason)
-            }
-          } catch (err) {
-            reject(err)
-          }
+          asyncCallback(promise2, onRejected, this.reason, resolve, reject)
         })
       })
       return promise2
@@ -53,30 +47,12 @@ class Promise {
       const promise2 = new Promise((resolve, reject) => {
         this.onResolveCallback.push(() => {
           setTimeout(() => {
-            try {
-              if (typeof onFulfilled === 'function') {
-                const x = onFulfilled(this.value)
-                resolveExecutor(promise2, x, resolve, reject)
-              } else {
-                resolve(this.value)
-              }
-            } catch (err) {
-              reject(err)
-            }
+            asyncCallback(promise2, onFulfilled, this.value, resolve, reject, true)
           })
         })
         this.onRejectCallback.push(() => {
           setTimeout(() => {
-            try {
-              if (typeof onRejected === 'function') {
-                const x = onRejected(this.reason)
-                resolveExecutor(promise2, x, resolve, reject)
-              } else {
-                reject(this.reason)
-              }
-            } catch (err) {
-              reject(err)
-            }
+            asyncCallback(promise2, onRejected, this.reason, resolve, reject)
           })
         })
       })
@@ -125,10 +101,10 @@ class Promise {
 }
 
 const resolveExecutor = (promise2, x, resolve, reject) => {
-  if (promise2 === x) {
-    return reject(new TypeError('不能循环引用'))
-  }
   if (x instanceof Promise) {
+    if (promise2 === x) {
+      return reject(new TypeError('不能循环引用'))
+    }
     x.then(resolve, reject)
   } else if (x !== null && (typeof x === 'object' || typeof x === 'function')) {
     let then
@@ -161,49 +137,19 @@ const resolveExecutor = (promise2, x, resolve, reject) => {
   }
 }
 
+function handleResolve (value) {
+  this.status = 'fulfilled'
+  this.value = value
+  while (this.onResolveCallback.length) {
+    this.onResolveCallback.shift()()
+  }
+}
+
 function resolve (value) {
-  const resolved = resolve.bind(this)
+  const resolved = handleResolve.bind(this)
   const rejected = reject.bind(this)
   if (this.status === 'panding') {
-    if (value instanceof Promise) {
-      value.then(resolved, rejected)
-    } else if (value !== null && (typeof value === 'object' || typeof value === 'function')) {
-      let then
-      try {
-        then = value.then
-      } catch (err) {
-        rejected(err)
-      }
-      if (typeof then === 'function') {
-        let called = false
-        const resolvePromise = (y) => {
-          !called && resolveExecutor(null, y, resolved, rejected)
-          called = called === false
-        }
-        const rejectPromise = (r) => {
-          !called && rejected(r)
-          called = called === false
-        }
-        try {
-          then.call(value, resolvePromise, rejectPromise)
-        } catch (err) {
-          !called && rejected(err)
-          called = called === false
-        }
-      } else {
-        this.status = 'fulfilled'
-        this.value = value
-        while (this.onResolveCallback.length) {
-          this.onResolveCallback.shift()()
-        }
-      }
-    } else {
-      this.status = 'fulfilled'
-      this.value = value
-      while (this.onResolveCallback.length) {
-        this.onResolveCallback.shift()()
-      }
-    }
+    resolveExecutor(null, value, resolved, rejected)
   }
 }
 
@@ -216,18 +162,3 @@ function reject (reason) {
     }
   }
 }
-
-exports.deferred = function () {
-  var resolve, reject
-  var promise = new Promise(function (_resolve, _reject) {
-    resolve = _resolve
-    reject = _reject
-  })
-  return {
-    promise: promise,
-    resolve: resolve,
-    reject: reject
-  }
-}
-exports.resolved = Promise.resolve
-exports.rejected = Promise.reject

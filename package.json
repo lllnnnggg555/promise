@@ -7,12 +7,12 @@
     ],
     "version": "0.0.1",
     "author": "wengzp",
-    "main": "lib/promise/index.js",
+    "main": "src/index.js",
     "scripts": {
         "lint": "jshint lib",
         "test": "mocha",
         "prepublish": "node ./scripts/generateTestFiles.js",
-        "babel": "babel lib/promise/index_es6.js -o lib/promise/index.js",
+        "babel": "babel src/index_es6.js -o src/index.js",
         "promise-test": "node lib/cli.js lib/promise/index.js"
     },
     "dependencies": {
