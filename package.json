@@ -5,26 +5,26 @@
         "promises",
         "promises-aplus"
     ],
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "wengzp",
     "main": "src/index.js",
     "scripts": {
         "lint": "jshint lib",
         "test": "mocha",
         "prepublish": "node ./scripts/generateTestFiles.js",
-        "babel": "babel src/index_es6.js -o src/index.js",
+        "babel": "babel src/index_es6.js -o src/index.min.js",
         "promise-test": "node lib/cli.js lib/promise/index.js"
     },
     "dependencies": {
-        "babel-plugin-add-module-exports": "^0.2.1",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-stage-0": "^6.24.1",
         "mocha": "^2.5.3",
-        "promise": "^8.0.1",
         "sinon": "^1.10.3",
         "underscore": "~1.8.3"
     },
     "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-plugin-add-module-exports": "^0.2.1",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-stage-0": "^6.24.1",
         "jshint": "^2.9.2"
     },
     "browser": {
