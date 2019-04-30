@@ -5,6 +5,8 @@
 
 # Implement Promises/A+ with es6
 
+[![Build Status](https://travis-ci.com/lllnnnggg555/promise.svg?branch=master)](https://travis-ci.com/lllnnnggg555/promise)
+
 用es6实现了一个promise，使用 Compliance Tests测试通过，转es5请运行脚本 npm run babel。
 
 ## How To Test

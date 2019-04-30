@@ -35,17 +35,17 @@ function Promise(executor) {
         var called = false
         var resolvePromise = function(y) {
           !called && self.resolveExecutor(promise2, y, resolve, reject)
-          called = called === false
+          called = !called
         }
         var rejectPromise = function(r) {
           !called && reject(r)
-          called = called === false
+          called = !called
         }
         try {
           then.call(x, resolvePromise, rejectPromise)
         } catch (err) {
           !called && reject(err)
-          called = called === false
+          called = !called
         }
       } else {
         resolve(x)
