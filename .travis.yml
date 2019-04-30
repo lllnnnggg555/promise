@@ -7,4 +7,4 @@ before_install:
 install:
   - yarn
 script: 
-  - promise-test
+  - npm run promise-test
