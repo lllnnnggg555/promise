@@ -1,10 +1,12 @@
 language: node_js
 node_js:
-  - "10"
+- '10'
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.15.2
-  - export PATH="$HOME/.yarn/bin:$PATH"
+- openssl aes-256-cbc -K $encrypted_8d0a7be590c4_key -iv $encrypted_8d0a7be590c4_iv
+  -in id_rsa.enc -out ~\/.ssh/id_rsa -d
+- curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.15.2
+- export PATH="$HOME/.yarn/bin:$PATH"
 install:
-  - yarn
-script: 
-  - npm run promise-test
+- yarn
+script:
+- npm run promise-test
