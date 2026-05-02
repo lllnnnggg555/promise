@@ -12,7 +12,7 @@
         "lint": "jshint lib",
         "test": "mocha",
         "prepublish": "node ./scripts/generateTestFiles.js",
-        "babel": "babel src/index_es6.js -o src/index.min.js",
+        "babel": "babel src/index_es.js -o src/index.js",
         "promise-test": "node lib/cli.js lib/promise/index.js"
     },
     "dependencies": {
